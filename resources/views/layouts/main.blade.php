@@ -74,20 +74,42 @@
 						</a>
 					</li>
 
+					<li  <?php if (strpos(url()->current(), "item/settings")) echo 'class="menu-item active open"'; else echo 'class="menu-item"'; ?>>
+						<a href="javascript:void(0);" class="menu-link menu-toggle">
+							<i class="menu-icon tf-icons bx bx-cog"></i>
+							<div data-i18n="Form Elements">設定</div>
+						</a>
+						<ul class="menu-sub">
+							<li <?php if (strpos(url()->current(), "item/settings/exhibit")) echo 'class="menu-item active"'; else echo 'class="menu-item"'; ?>>
+								<a href="{{ route('item_settings_exhibit') }}" class="menu-link collapsed">
+									<div data-i18n="Basic Inputs">出品設定</div>
+								</a>
+							</li>
+							<li <?php if (strpos(url()->current(), "item/settings/calculation")) echo 'class="menu-item active"'; else echo 'class="menu-item"'; ?>>
+								<a href="{{ route('item_settings_calculation') }}" class="menu-link collapsed">
+									<div data-i18n="Input groups">利益計算設定</div>
+								</a>
+							</li>
+							<li <?php if (strpos(url()->current(), "item/settings/exclusion")) echo 'class="menu-item active"'; else echo 'class="menu-item"'; ?>>
+								<a href="{{ route('item_settings_exclusion') }}" class="menu-link collapsed">
+									<div data-i18n="Input groups">除外設定</div>
+								</a>
+							</li>
+						</ul>
+					</li>
+
 					@php
 						$storeList = App\Models\YahooStore::where('user_id', Auth::id())->get();
 					@endphp
 
-					<li <?php if (strpos(url()->current(), "item/amazon_register")) echo 'class="menu-item active open"';
-						else echo 'class="menu-item"'; ?>>
+					<li <?php if (strpos(url()->current(), "item/amazon_register")) echo 'class="menu-item active open"'; else echo 'class="menu-item"'; ?>>
 						<a href="javascript:void(0);" class="menu-link menu-toggle">
 							<i class="menu-icon tf-icons bx bx-cog"></i>
 							<div data-i18n="Form Elements">Amazon登録</div>
 						</a>
 						<ul class="menu-sub">
 							@foreach ( $storeList as $store )
-							<li <?php if (strpos(url()->current(), "item/amazon_register/" . $store->id)) echo 'class="menu-item active"';
-								else echo 'class="menu-item"'; ?>>
+							<li <?php if (strpos(url()->current(), "item/amazon_register/" . $store->id)) echo 'class="menu-item active"'; else echo 'class="menu-item"'; ?>>
 								<a href="{{ route('item_register', $store->id) }}" class="menu-link collapsed">
 									<div>{{ $store->store_name }}</div>
 								</a>
@@ -96,16 +118,14 @@
 						</ul>
 					</li>
 
-					<li <?php if (strpos(url()->current(), "item/yahoo_exhibit")) echo 'class="menu-item active open"';
-						else echo 'class="menu-item"'; ?>>
+					<li <?php if (strpos(url()->current(), "item/yahoo_exhibit")) echo 'class="menu-item active open"'; else echo 'class="menu-item"'; ?>>
 						<a href="javascript:void(0);" class="menu-link menu-toggle">
 							<i class="menu-icon tf-icons bx bx-cog"></i>
 							<div data-i18n="Form Elements">Yahoo出品</div>
 						</a>
 						<ul class="menu-sub">
 							@foreach ( $storeList as $store )
-							<li <?php if (strpos(url()->current(), "item/yahoo_exhibit/" . $store->id)) echo 'class="menu-item active"';
-								else echo 'class="menu-item"'; ?>>
+							<li <?php if (strpos(url()->current(), "item/yahoo_exhibit/" . $store->id)) echo 'class="menu-item active"'; else echo 'class="menu-item"'; ?>>
 								<a href="{{ route('item_exhibit', $store->id) }}" class="menu-link collapsed">
 									<div>{{ $store->store_name }}</div>
 								</a>
@@ -114,16 +134,14 @@
 						</ul>
 					</li>
 
-					<li <?php if (strpos(url()->current(), "item/yahoo_order")) echo 'class="menu-item active open"';
-						else echo 'class="menu-item"'; ?>>
+					<li <?php if (strpos(url()->current(), "item/yahoo_order")) echo 'class="menu-item active open"'; else echo 'class="menu-item"'; ?>>
 						<a href="javascript:void(0);" class="menu-link menu-toggle">
 							<i class="menu-icon tf-icons bx bx-cog"></i>
 							<div data-i18n="Form Elements">Yahoo注文</div>
 						</a>
 						<ul class="menu-sub">
 							@foreach ( $storeList as $store )
-							<li <?php if (strpos(url()->current(), "item/yahoo_order/" . $store->id)) echo 'class="menu-item active"';
-								else echo 'class="menu-item"'; ?>>
+							<li <?php if (strpos(url()->current(), "item/yahoo_order/" . $store->id)) echo 'class="menu-item active"'; else echo 'class="menu-item"'; ?>>
 								<a href="{{ route('item_order', $store->id) }}" class="menu-link collapsed">
 									<div>{{ $store->store_name }}</div>
 								</a>
@@ -131,14 +149,6 @@
 							@endforeach
 						</ul>
 					</li>
-
-					<!-- <li <?php // if (strpos(url()->current(), "settings")) echo 'class="menu-item active"';
-						// else echo 'class="menu-item"'; ?>>
-						<a href="{{-- route('settings') --}}" class="menu-link">
-							<i class='menu-icon tf-icons bx bx-list-plus'></i>
-							<div>商品登録</div>
-						</a>
-					</li> -->
 
 					<li class="menu-item">
 						<a href="{{ route('logout') }}" class="menu-link">

@@ -29,6 +29,7 @@ db.yahooSettingList = require("./YahooSetting.model.js")(sequelize, Sequelize);
 db.yahooStoreList = require("./YahooStore.model.js")(sequelize, Sequelize);
 db.yahooStoreItemList = require("./YahooStoreItem.model.js")(sequelize, Sequelize);
 db.yahooOrderItemList = require("./YahooOrderItem.model.js")(sequelize, Sequelize);
+db.exSettingList = require("./Exsetting.model.js")(sequelize, Sequelize);
 
 
 module.exports = db;

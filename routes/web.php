@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\YahooOrderItemController;
+use App\Http\Controllers\ExsettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,27 @@ Route::middleware('auth')->group(function () {
 
 	});
 
+    Route::prefix('/item/settings')->group(function() {
+        Route::get('/exhibit', [ExsettingController::class, 'item_settings_exhibit'])->name('item_settings_exhibit');
+        Route::post('/exhibit/save_amazon_setting', [ExsettingController::class, 'save_amazon_setting'])->name('save_amazon_setting');
+        Route::post('/exhibit/save_yahoo_setting', [ExsettingController::class, 'save_yahoo_setting'])->name('save_yahoo_setting');
+
+        Route::get('/calculation', [ExsettingController::class, 'item_settings_calculation'])->name('item_settings_calculation');
+        Route::post('/calculation/save_price_range', [ExsettingController::class, 'save_price_settings'])->name('save_price_settings');
+
+        Route::get('/exclusion', [ExsettingController::class, 'item_settings_exclusion'])->name('item_settings_exclusion');
+        
+        Route::post('/commission', [ExsettingController::class, 'item_settings_commission'])->name('item_settings_commission');
+        Route::post('/expenses', [ExsettingController::class, 'item_settings_expenses'])->name('item_settings_expenses');
+    });
+
+    // User Routes
+	Route::prefix('user')->group(function() {
+        Route::post('set/column/user', [ExsettingController::class, 'set_column_user'])->name('set_column');
+        Route::post('set/column/exset', [ExsettingController::class, 'set_column_exset'])->name('set_column_exset');
+        Route::post('/save_userdata', [ExsettingController::class, 'save_userdata'])->name('save_userdata');
+        Route::post('/save_limit', [ExsettingController::class, 'save_limit'])->name('save_limit');
+    });
 
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
