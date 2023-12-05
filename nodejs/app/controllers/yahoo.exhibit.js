@@ -177,24 +177,23 @@ const exhibit_Main = async (store_id, access_token) => {
 					var sale_price = Math.round(i.am_price * 1.1);
 
 					if (priceSetting.length != 0) {
+						var amazonP = i.am_price;
 
 						for (let p = 0; p < priceSetting.length; p++) {
-							var amazonP = i.am_price;
 							var startP = Number(priceSetting[p].start_price);
 							var endP = Number(priceSetting[p].end_price);
-							var plusA = Number(priceSetting[p].plus_amount);
-							var minusA = Number(priceSetting[p].minus_amount);
+							// var plusA = Number(priceSetting[p].plus_amount);
+							// var minusA = Number(priceSetting[p].minus_amount);
 							var profitR = Number(priceSetting[p].profit_rate);
 							var profitA = Number(priceSetting[p].profit_amount);
-							var expenses = Number(setting_list.expenses);
+							// var expenses = Number(setting_list.expenses);
 							var commission = Number(setting_list.commission);
 
-							if (amazonP > startP && amazonP < endP) {
+							if (amazonP > startP) {
 								// var exPrice1 = amazonP * (profitR + 100) / 100 + plusA - minusA;
-								var exPrice2 = amazonP + profitA;
+								var exPrice2 = amazonP * (profitR + 100) / 100 + profitA;
 								// sale_price = (Math.max(exPrice1, exPrice2) + expenses) / (100 - commission) * 100;
-								sale_price = (exPrice2 + expenses) / (100 - commission) * 100;
-								break;
+								sale_price = Number(exPrice2) / (100 - commission) * 100;
 							}
 						}
 					}
@@ -337,7 +336,7 @@ exports.exhibit = async (req, res) => {
 
 	if (req.body.authorization == 'new') {
 
-		await newAuthorization(store_id, code);
+		await yahoo_token.newAuthorization(store_id, code);
 
 		setTimeout(() => {
 			exhibit_get_token(store_id);
@@ -347,7 +346,7 @@ exports.exhibit = async (req, res) => {
 
 	} else {
 
-		await reAuthorization(store_id);
+		await yahoo_token.reAuthorization(store_id);
 
 		setTimeout(() => {
 			exhibit_get_token(store_id);
