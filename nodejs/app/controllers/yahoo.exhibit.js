@@ -221,7 +221,7 @@ const exhibit_Main = async (store_id, access_token) => {
 						'postage_set': yahooSetting.deli_group,
 					};
 
-					post(yahoo_editItem_url, querystring.stringify(save_info), { headers: { 'Authorization': yahoo_auth_token } })
+					axios.post(yahoo_editItem_url, querystring.stringify(save_info), { headers: { 'Authorization': yahoo_auth_token } })
 						.then((res) => {
 							console.log(':) Wow, yahoo exhibition succeeded! :)');
 
@@ -233,7 +233,7 @@ const exhibit_Main = async (store_id, access_token) => {
 								'stock-close': 0
 							};
 
-							post(yahoo_setStock_url, querystring.stringify(stockInfo), { headers: { 'Authorization': yahoo_auth_token } })
+							axios.post(yahoo_setStock_url, querystring.stringify(stockInfo), { headers: { 'Authorization': yahoo_auth_token } })
 								.then((res) => {
 									console.log(':) Wow, stockinfo updated successfully! :)');
 
