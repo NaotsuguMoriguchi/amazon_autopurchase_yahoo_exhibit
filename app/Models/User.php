@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role',
         'registered_item',
+        'progress',
         'limit_item',
     ];
 

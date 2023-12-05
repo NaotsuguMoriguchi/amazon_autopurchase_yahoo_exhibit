@@ -68,7 +68,9 @@ class SettingController extends Controller
 
     public function save_history(Request $request)
     {
-        $user_id = Auth::id();
+        $user = Auth::user();
+
+        $user_id = $user->id;
 
         $history = new AmazonRegisterHistory;
 		$history->user_id = $user_id;
@@ -76,6 +78,9 @@ class SettingController extends Controller
 		$history->csv_filename = $request->file_name;
 		$history->count = $request->len;
 		$history->save();
+        
+        $user->registered_item = $request->len;
+        $user->save();
         
 		return $history;
     }
@@ -262,40 +267,4 @@ class SettingController extends Controller
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public function settings(Request $request): View
-    {
-        $user_id = Auth::id();
-		$amazon_setting = AmazonSetting::where('user_id', $user_id)->first();
-		$yahoo_setting = YahooSetting::where('user_id', $user_id)->first();
-
-        return view('setting.setting', ['amazon_setting' => $amazon_setting, 'yahoo_setting' => $yahoo_setting]);
-    }
-
-    public function set_column(Request $request)
-    {
-		$user_id = Auth::id();
-        if ($request->setting == 'as') {
-            $setting = AmazonSetting::find($user_id);
-        } else {
-            $setting = YahooSetting::find($user_id);
-        }
-		$setting[$request->col] = $request->content;
-		$setting->save();
-		
-		return;
-	}
 }

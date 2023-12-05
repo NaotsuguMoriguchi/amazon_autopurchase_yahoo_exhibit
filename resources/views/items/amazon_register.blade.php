@@ -117,7 +117,7 @@
 								<span id="progress-num">0</span> 件 / <span id="total-num">0</span> 件
 							</div>
 							<div class="col text-center">
-								総数 : <span id="total-count">0</span> 件 / 登録された商品数 : <span id="registered-count">0</span> 件
+								総数 : <span id="total-count">{{ App\Models\User::find(Auth::id())->limit_item }}</span> 件 / 登録商品数 : <span id="registered-count">{{ App\Models\AmazonItem::where('store_id', $yahoo_store->id)->count() }}</span> 件
 							</div>
 						</div>
 						<div class="row mt-4">
@@ -184,7 +184,7 @@
 					<h6 class="text-danger">*最初に登録するAPIは商品登録専用APIになります。</h6>
 				</div>
 			</div>
-
+		
 			<!-- Modal footer -->
 			<div class="modal-footer" id="button-container">
 				<button type="button" class="btn btn-primary" onclick="add_amSetting()">追加</button>
@@ -231,8 +231,9 @@
 	var newCsvResult, csvFile;
 
 	$('#csv_load').on('change', function(e) {
+
 		result = e.target.id;
-		// clearInterval(scanInterval);
+		clearInterval(scanInterval);
 
 		csvFile = e.target.files[0];
 		newCsvResult = [];
@@ -261,22 +262,32 @@
 					if (code.length == 1) {
 						code = i.split('\r');
 						if (code[0] != '') {
-							newCsvResult.push(code[0]);
+							if (isValidASIN(code[0])) {
+								newCsvResult.push(code[0]);
+							}
 						}
 					} else {
-						newCsvResult.push(code[1]);
+						if (isValidASIN(code[1])) {
+							newCsvResult.push(code[1]);
+						}
 					}
 				}
-				
-				if (newCsvResult[0] == 'ASIN') { newCsvResult.shift(); }
 
+				if (newCsvResult[0] == 'ASIN') { newCsvResult.shift(); }
 				
+				// to prevent csv list from being duplicated
+				newCsvResult = [...new Set(newCsvResult)];
 
 				$('#total-num').html(newCsvResult.length);
 			}
 			reader.readAsText(csvFile);
 		}
 	});
+
+	function isValidASIN(asin) {
+		const asinRegex = /^[A-Z0-9]{10}$/;
+		return asinRegex.test(asin);
+	}
 
 	const csv_register = async () => {
 		if (csvFile === undefined) {
@@ -293,9 +304,11 @@
 				len: newCsvResult.length,
 			},
 			success: function () {
-				console.log('OK');
 				toastr.info('商品登録を開始します。');
 
+				setInterval(() => {
+					scan();
+				}, 5 * 1000);
 				$('#register-status').css('display', 'block');
 
 				$('#csv_load').attr('disabled', true);
@@ -318,7 +331,7 @@
 			},
 			success: function (res) {
 				console.log(res);
-				toastr.success('success');
+				toastr.success('正常に登録されました。');
 			}
 		});
 
@@ -338,7 +351,7 @@
 			success: function (res) {
 				console.log(res);
 				location.reload();
-				toastr.success('delete success');
+				toastr.success('正常に追加されました。');
 			}
 		});
 	}
@@ -372,7 +385,45 @@
 			success: function (res) {
 				console.log(res);
 				location.reload();
-				toastr.success('delete success');
+				toastr.success('正常に削除されました。');
+			}
+		});
+	}
+
+	var scanInterval = setInterval(() => {
+		scan();
+	}, 5 * 1000);
+
+	$(document).ready(function () {
+		$.ajax({
+			url: '{{ route("progress") }}',
+			type: 'get',
+			success: function(response) {
+				$('#total-num').html(response.registered_item);
+				$('#progress-num').html(response.progress);
+				var percent = Math.floor(response.progress / response.registered_item * 100);
+				$('#percent-num').html(percent + '%');
+				$('#progress').attr('aria-valuenow', percent);
+				$('#progress').css('width', percent + '%');
+			}
+		});
+	});
+
+	function scan() {
+		$.ajax({
+			url: "{{ route('progress') }}",
+			type: "get",
+			success: function(response) {
+				$('#total-num').html(response.registered_item);
+				$('#progress-num').html(response.progress);
+				var percent = Math.floor(response.progress / response.registered_item * 100);
+				$('#percent-num').html(percent + '%');
+				$('#progress').attr('aria-valuenow', percent);
+				$('#progress').css('width', percent + '%');
+
+				if (percent == 100) {
+					toastr.success('正常に登録されました。');
+				}
 			}
 		});
 	}

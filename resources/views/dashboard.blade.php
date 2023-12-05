@@ -31,7 +31,7 @@
 						</div>
 
 						<div class="row mt-5">
-							<h6>Yahooストアの注文更新</h6>
+							<h6>Yahooストア別注文情報</h6>
 							@foreach($yahoo_stores as $store)
 								@php
 									$created_refresh_token = App\Models\YahooSetting::where('store_id', $store->id)->pluck('created_refresh_token')->first();

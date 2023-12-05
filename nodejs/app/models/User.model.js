@@ -22,6 +22,9 @@ module.exports = (sequelize, Sequelize) => {
 		registered_item: {
 			type: Sequelize.INTEGER,
 		},
+		progress: {
+			type: Sequelize.INTEGER,
+		},
 		limit_item: {
 			type: Sequelize.INTEGER,
 		},

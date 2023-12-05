@@ -143,6 +143,19 @@ const amazonInput = (amSetting, codeList) => {
 				);
 				getItemInfo.main();
 				index += 10;
+
+				userList.findByPk(amSetting.user_id)
+				.then((user) => {
+					var query = {
+						progress: index
+					};
+
+					userList.update(query, {
+						where: {
+							id: amSetting.user_id,
+						}
+					});
+				});
 			} else {
 				clearInterval(inputInterval);
 			}

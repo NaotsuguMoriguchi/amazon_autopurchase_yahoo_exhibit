@@ -14,7 +14,7 @@ use DateTimeZone;
 use App\Models\YahooStore;
 use App\Models\YahooSetting;
 use App\Models\YahooOrderItem;
-
+use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -27,4 +27,10 @@ class DashboardController extends Controller
         return view('dashboard', ['yahoo_stores' => $yahoo_store, 'order_count' => count($all_order)]);
     }
 
+    public function progress(Request $request)
+    {
+        $user = Auth::user();
+        
+        return $user;
+    }
 }
