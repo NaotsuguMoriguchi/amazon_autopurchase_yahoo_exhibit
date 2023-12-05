@@ -23,6 +23,7 @@
 
 @php
 	$user = Auth::user();
+	$registeredAsins = App\Models\AmazonItem::select('asin')->where('store_id', $yahoo_store->id)->get();
 @endphp
 
 @section('content')
@@ -229,6 +230,7 @@
 
 
 	var newCsvResult, csvFile;
+	var registeredAsins = <?php echo $registeredAsins; ?>
 
 	$('#csv_load').on('change', function(e) {
 
@@ -262,12 +264,12 @@
 					if (code.length == 1) {
 						code = i.split('\r');
 						if (code[0] != '') {
-							if (isValidASIN(code[0])) {
+							if (isValidASIN(code[0]) && isDuplicated(code[0])) {
 								newCsvResult.push(code[0]);
 							}
 						}
 					} else {
-						if (isValidASIN(code[1])) {
+						if (isValidASIN(code[1]) && isDuplicated(code[1])) {
 							newCsvResult.push(code[1]);
 						}
 					}
@@ -287,6 +289,15 @@
 	function isValidASIN(asin) {
 		const asinRegex = /^[A-Z0-9]{10}$/;
 		return asinRegex.test(asin);
+	}
+
+	function isDuplicated(asin) {
+		for (const ra of registeredAsins) {
+			if (ra.asin == asin) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	const csv_register = async () => {
