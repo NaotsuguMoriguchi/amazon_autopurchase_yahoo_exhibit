@@ -336,7 +336,7 @@ exports.exhibit = async (req, res) => {
 
 	if (req.body.authorization == 'new') {
 
-		await newAuthorization(store_id, code);
+		await yahoo_token.newAuthorization(store_id, code);
 
 		setTimeout(() => {
 			exhibit_get_token(store_id);
@@ -346,7 +346,7 @@ exports.exhibit = async (req, res) => {
 
 	} else {
 
-		await reAuthorization(store_id);
+		await yahoo_token.reAuthorization(store_id);
 
 		setTimeout(() => {
 			exhibit_get_token(store_id);
