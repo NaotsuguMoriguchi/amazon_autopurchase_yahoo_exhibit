@@ -15,7 +15,7 @@ const img_download = async (item_imgs, storeImgDir, jancode) => {
 	for (let i = 0, len = item_imgs.length; i < Math.min(5, len); i++) {
 		let file_name = (i == 0) ? (`${storeImgDir}/AYP-${jancode}.jpg`) : (`${storeImgDir}/AYP-${jancode}_${i}.jpg`);
 
-		await _image({
+		await download.image({
 			url: item_imgs[i],
 			dest: file_name,
 		})
@@ -30,14 +30,14 @@ const img_download = async (item_imgs, storeImgDir, jancode) => {
 
 
 const countJpgFiles = (folderPath) => {
-	const files = readdirSync(folderPath);
+	const files = fs.readdirSync(folderPath);
 	const jpgFiles = files.filter((file) => file.endsWith('.jpg'));
 	return jpgFiles.length;
 };
 
 
 const createZipFiles = async (folderPath, batchSize, maxCount) => {
-	const files = readdirSync(folderPath).filter((file) => file.endsWith('.jpg'));
+	const files = fs.readdirSync(folderPath).filter((file) => file.endsWith('.jpg'));
 	let count = 0;
 	let zipIndex = 1;
 	let fileIndex = 0;
@@ -45,7 +45,7 @@ const createZipFiles = async (folderPath, batchSize, maxCount) => {
 	try {
 		while (count < maxCount && fileIndex < files.length) {
 			const zipFilePath = `${folderPath}/img${zipIndex}.zip`;
-			const output = createWriteStream(zipFilePath);
+			const output = fs.createWriteStream(zipFilePath);
 			const archive = archiver('zip', { zlib: { level: 9 } });
 
 			await new Promise((resolve, reject) => {
@@ -78,8 +78,8 @@ const createZipFiles = async (folderPath, batchSize, maxCount) => {
 
 
 const removeFilesAndFolders = (folderPath) => {
-	if (existsSync(folderPath)) {
-		emptyDirSync(folderPath);
+	if (fs.existsSync(folderPath)) {
+		fse.emptyDirSync(folderPath);
 		console.log(`All files and folders in ${folderPath} have been removed successfully!`);
 	} else {
 		console.log(`Directory ${folderPath} does not exist.`);
@@ -93,14 +93,14 @@ const img_upload = async (uploadImgPack_url, yahoo_auth_token, storeImgDir, zipF
 		try {
 			const zipFilePath = `${storeImgDir}/${zipFile}`;
 			const formData = new FormData();
-			formData.append('file', createReadStream(zipFilePath));
+			formData.append('file', fs.createReadStream(zipFilePath));
 
 			const headers = {
 				'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
 				'Authorization': yahoo_auth_token
 			};
 
-			const response = await post(uploadImgPack_url, formData, { headers });
+			const response = await axios.post(uploadImgPack_url, formData, { headers });
 			console.log(`File ${zipFile} uploaded successfully`);
 
 		} catch (error) {
@@ -109,7 +109,7 @@ const img_upload = async (uploadImgPack_url, yahoo_auth_token, storeImgDir, zipF
 	});
 
 	await Promise.all(uploadPromises);
-}
+};
 
 
 const exhibit_Main = async (store_id, access_token) => {
@@ -221,7 +221,7 @@ const exhibit_Main = async (store_id, access_token) => {
 						'postage_set': yahooSetting.deli_group,
 					};
 
-					post(yahoo_editItem_url, stringify(save_info), { headers: { 'Authorization': yahoo_auth_token } })
+					post(yahoo_editItem_url, querystring.stringify(save_info), { headers: { 'Authorization': yahoo_auth_token } })
 						.then((res) => {
 							console.log(':) Wow, yahoo exhibition succeeded! :)');
 
@@ -233,7 +233,7 @@ const exhibit_Main = async (store_id, access_token) => {
 								'stock-close': 0
 							};
 
-							post(yahoo_setStock_url, stringify(stockInfo), { headers: { 'Authorization': yahoo_auth_token } })
+							post(yahoo_setStock_url, querystring.stringify(stockInfo), { headers: { 'Authorization': yahoo_auth_token } })
 								.then((res) => {
 									console.log(':) Wow, stockinfo updated successfully! :)');
 
@@ -280,38 +280,38 @@ const exhibit_Main = async (store_id, access_token) => {
 						});
 
 					index++;
-				
 
-			} else {
-				clearInterval(exInterval);
-				console.log('exhibit end.');
 
-				const folderPath = storeImgDir;
-				const batchSize = 200;
-				const maxCount = countJpgFiles(storeImgDir);
+				} else {
+					clearInterval(exInterval);
+					console.log('exhibit end.');
 
-				try {
-					await createZipFiles(folderPath, batchSize, maxCount);
-					console.log('All batches zipped successfully!');
+					const folderPath = storeImgDir;
+					const batchSize = 200;
+					const maxCount = countJpgFiles(storeImgDir);
 
-					const zipFiles = readdirSync(folderPath).filter((file) => file.endsWith('.zip'));
-					console.log('Zip files length:', zipFiles.length, zipFiles[0], '\n', 'Zip files:', zipFiles);
+					try {
+						await createZipFiles(folderPath, batchSize, maxCount);
+						console.log('All batches zipped successfully!');
 
-					await img_upload(uploadImgPack_url, yahoo_auth_token, storeImgDir, zipFiles);
-					console.log('All Zip files uploaded successfully!');
+						const zipFiles = fs.readdirSync(folderPath).filter((file) => file.endsWith('.zip'));
+						console.log('Zip files length:', zipFiles.length, zipFiles[0], '\n', 'Zip files:', zipFiles);
 
-					removeFilesAndFolders(folderPath);
-				} catch (error) {
-					console.error('Error zipping files:', error);
+						await img_upload(uploadImgPack_url, yahoo_auth_token, storeImgDir, zipFiles);
+						console.log('All Zip files uploaded successfully!');
+
+						removeFilesAndFolders(folderPath);
+					} catch (error) {
+						console.error('Error zipping files:', error);
+					}
+					console.log('make all zip.');
+
+
 				}
-				console.log('make all zip.');
-
-
-			}
-		}, 2 * 1000);
-	}).catch(err => {
-		console.log('+++++++++++-------- itemlist error --------+++++++++++', err.message);
-	});
+			}, 2 * 1000);
+		}).catch(err => {
+			console.log('+++++++++++-------- itemlist error --------+++++++++++', err.message);
+		});
 }
 
 
