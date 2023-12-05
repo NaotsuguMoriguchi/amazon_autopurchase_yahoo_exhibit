@@ -182,19 +182,18 @@ const exhibit_Main = async (store_id, access_token) => {
 							var amazonP = i.am_price;
 							var startP = Number(priceSetting[p].start_price);
 							var endP = Number(priceSetting[p].end_price);
-							var plusA = Number(priceSetting[p].plus_amount);
-							var minusA = Number(priceSetting[p].minus_amount);
+							// var plusA = Number(priceSetting[p].plus_amount);
+							// var minusA = Number(priceSetting[p].minus_amount);
 							var profitR = Number(priceSetting[p].profit_rate);
 							var profitA = Number(priceSetting[p].profit_amount);
-							var expenses = Number(setting_list.expenses);
+							// var expenses = Number(setting_list.expenses);
 							var commission = Number(setting_list.commission);
 
-							if (amazonP > startP && amazonP < endP) {
+							if (amazonP > startP) {
 								// var exPrice1 = amazonP * (profitR + 100) / 100 + plusA - minusA;
 								var exPrice2 = amazonP + profitA;
 								// sale_price = (Math.max(exPrice1, exPrice2) + expenses) / (100 - commission) * 100;
-								sale_price = (exPrice2 + expenses) / (100 - commission) * 100;
-								break;
+								sale_price = Number(exPrice2) / (100 - commission) * 100;
 							}
 						}
 					}

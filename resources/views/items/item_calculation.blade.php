@@ -51,8 +51,8 @@
 									<th>Amazon販売価格(from)</th>
 									<th>Amazon販売価格(to)</th>
 									<th>利益率</th>
-									<th>プラス金額(円)</th>
-									<th>マイナス金額(円)</th>
+									<!-- <th>プラス金額(円)</th>
+									<th>マイナス金額(円)</th> -->
 									<th>利益額(円)</th>
 									<th><span class="text-primary" onclick="add_priceRange()"><i class='bx bxs-plus-circle'></i></span></th>
 								</tr>
@@ -63,8 +63,6 @@
 									<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)">{{$s->start_price??0}}</td>
 									<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)">{{$s->end_price??0}}</td>
 									<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)">{{$s->profit_rate??0}}</td>
-									<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)">{{$s->plus_amount??0}}</td>
-									<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)">{{$s->minus_amount??0}}</td>
 									<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)">{{$s->profit_amount??0}}</td>
 									<td>
 										<div>
@@ -169,8 +167,6 @@
 							<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)"></td>
 							<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)"></td>
 							<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)">10</td>
-							<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)">0</td>
-							<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)">0</td>
 							<td class="table_td" onclick="this.contentEditable=true;" onblur="save_td(event)">0</td>
 							<td>
 								<div>
