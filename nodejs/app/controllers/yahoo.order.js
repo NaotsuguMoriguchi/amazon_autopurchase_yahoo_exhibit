@@ -11,7 +11,7 @@ const { userList, yahooStoreList, yahooSettingList, yahooOrderItemList } = requi
 
 
 const orderInfoMain = (orderInfo, yahooStore, access_token) => {
-	console.log(orderInfo);
+	// console.log(orderInfo);
 
 	const url = 'https://circus.shopping.yahooapis.jp/ShoppingWebService/V1/orderInfo';
 	const param = `
@@ -227,7 +227,7 @@ const orderCountMain = (yahooStore, access_token) => {
 }
 
 const yahoo_orderMain = async (store_id, access_token) => {
-	console.log('asdf', store_id, access_token);
+	// console.log('asdf', store_id, access_token);
 
 	try {
 		const yahooStores = await yahooStoreList.findAll({ where: { id: store_id } });

@@ -115,7 +115,8 @@
 					<div id="register-status" class="col-lg-12 mt-4" style="display: block;">
 						<div class="row">
 							<div class="col text-center">
-								<span id="progress-num">0</span> 件 / <span id="total-num">0</span> 件
+								<!-- <span id="progress-num">0</span> 件 / <span id="total-num">0</span> 件 -->
+								総 <span id="total-num">0</span> 件
 							</div>
 							<div class="col text-center">
 								総数 : <span id="total-count">{{ App\Models\User::find(Auth::id())->limit_item }}</span> 件 / 登録商品数 : <span id="registered-count">{{ App\Models\AmazonItem::where('store_id', $yahoo_store->id)->count() }}</span> 件
@@ -240,7 +241,7 @@
 		csvFile = e.target.files[0];
 		newCsvResult = [];
 
-		$('#progress-num').html('0');
+		// $('#progress-num').html('0');
 		$('#percent-num').html('0%');
 		$('#progress').attr('aria-valuenow', 0);
 		$('#progress').css('width', '0%');
@@ -256,7 +257,7 @@
 			reader.onload = function (e) {
 				$('#count').css('visibility', 'visible');
 				csvResult = e.target.result.split(/\n/);
-
+				console.log('csvResult', csvResult);
 				for (const i of csvResult) {
 					let code = i.split('\r');
 					code = i.split('"');
@@ -264,12 +265,12 @@
 					if (code.length == 1) {
 						code = i.split('\r');
 						if (code[0] != '') {
-							if (isValidASIN(code[0]) && isDuplicated(code[0])) {
+							if (isValidASIN(code[0]) && !isDuplicated(code[0])) {
 								newCsvResult.push(code[0]);
 							}
 						}
 					} else {
-						if (isValidASIN(code[1]) && isDuplicated(code[1])) {
+						if (isValidASIN(code[1]) && !isDuplicated(code[1])) {
 							newCsvResult.push(code[1]);
 						}
 					}
@@ -279,6 +280,8 @@
 				
 				// to prevent csv list from being duplicated
 				newCsvResult = [...new Set(newCsvResult)];
+				console.log('newCsvResult', newCsvResult);
+				console.log('registeredAsins', registeredAsins);
 
 				$('#total-num').html(newCsvResult.length);
 			}
@@ -411,7 +414,7 @@
 			type: 'get',
 			success: function(response) {
 				$('#total-num').html(response.registered_item);
-				$('#progress-num').html(response.progress);
+				// $('#progress-num').html(response.progress);
 				var percent = Math.floor(response.progress / response.registered_item * 100);
 				$('#percent-num').html(percent + '%');
 				$('#progress').attr('aria-valuenow', percent);
@@ -425,16 +428,29 @@
 			url: "{{ route('progress') }}",
 			type: "get",
 			success: function(response) {
-				$('#total-num').html(response.registered_item);
-				$('#progress-num').html(response.progress);
 				var percent = Math.floor(response.progress / response.registered_item * 100);
+				
+				if (percent < 100) {
+					
+				} else {
+					clearInterval(scanInterval);
+					percent = 100;
+					response.progress = response.registered_item;
+	
+					setTimeout(() => {
+						$('#total-num').html(0);
+						// $('#progress-num').html(0);
+						$('#percent-num').html('0%');
+						$('#progress').attr('aria-valuenow', 0);
+						$('#progress').css('width', '0%');
+					}, 3 * 1000);
+				}
+
+				$('#total-num').html(response.registered_item);
+				// $('#progress-num').html(response.progress);
 				$('#percent-num').html(percent + '%');
 				$('#progress').attr('aria-valuenow', percent);
 				$('#progress').css('width', percent + '%');
-
-				if (percent == 100) {
-					toastr.success('正常に登録されました。');
-				}
 			}
 		});
 	}

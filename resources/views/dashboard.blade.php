@@ -116,14 +116,14 @@
 		let expiration_hours = parseInt(exp_hours);
 
 		if (expiration_hours < 12) {
-			toastr.success(`Access token expires in ${12 - expiration_hours} hours.`);
+			// toastr.success(`Access token expires in ${12 - expiration_hours} hours.`);
 			let code = 'No';
 			let authorization_type = 're';
 
 			get_orderCount(store_id, authorization_type, code);
 
 		} else {
-			toastr.warning('Access token is expired.');
+			toastr.warning('アクセストークンの有効期限切れです。');
 			setTimeout(() => {
 				get_code(yahoo_id);
 			}, 3000);

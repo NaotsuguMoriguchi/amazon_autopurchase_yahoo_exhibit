@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
         // Order management
         Route::get('/yahoo_order/{store_id}', [SettingController::class, 'item_order'])->name('item_order');
         Route::get('/yahoo_order/csv_download/{ids}', [SettingController::class, 'csv_download'])->name('csv_download');
+        Route::get('/yahoo_order/delete/{ids}', [SettingController::class, 'order_delete'])->name('order_delete');
 
 	});
 

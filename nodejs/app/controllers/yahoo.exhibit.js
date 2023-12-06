@@ -12,9 +12,10 @@ const yahoo_token = require("../controllers/yahoo.token.js");
 const { amazonItemList, yahooStoreItemList, yahooSettingList, yahooStoreList, exSettingList } = require("../models");
 
 
-const img_download = async (item_imgs, storeImgDir, jancode) => {
+const img_download = async (item_imgs, storeImgDir, jancode, yahooSetting) => {
+
 	for (let i = 0, len = item_imgs.length; i < Math.min(5, len); i++) {
-		let file_name = (i == 0) ? (`${storeImgDir}/AYP-${jancode}.jpg`) : (`${storeImgDir}/AYP-${jancode}_${i}.jpg`);
+		let file_name = (i == 0) ? (`${storeImgDir}/${yahooSetting.product_code}-${jancode}.jpg`) : (`${storeImgDir}/${yahooSetting.product_code}-${jancode}_${i}.jpg`);
 
 		await download.image({
 			url: item_imgs[i],
@@ -187,7 +188,7 @@ const exhibit_Main = async (store_id, access_token, item_ids) => {
 					var item_imgs = (i.img_url).split(',');
 
 					if (item_imgs.length > 0) {
-						await img_download(item_imgs, storeImgDir, i.jan);
+						await img_download(item_imgs, storeImgDir, i.jan, yahooSetting);
 					}
 
 					var sale_price = Math.round(i.am_price * 1.1);
@@ -243,7 +244,7 @@ const exhibit_Main = async (store_id, access_token, item_ids) => {
 
 							var stockInfo = {
 								'seller_id': yahooStore.store_name,
-								'item_code': yahooSetting.product_code + i.jan,
+								'item_code': yahooSetting.product_code + '-' + i.jan,
 								'quantity': yahooSetting.stock_number,
 								'allow-overdraft': 1,
 								'stock-close': 0
@@ -257,7 +258,7 @@ const exhibit_Main = async (store_id, access_token, item_ids) => {
 									query.user_id = yahooStore.user_id;
 									query.store_id = store_id;
 									query.amazon_category = i.category;
-									query.yahoo_category = yahoo_category;
+									query.yahoo_category = yahooSetting.category;
 									query.name = i.name;
 									query.caption = i.caption;
 									query.dimension = i.dimension;
@@ -287,7 +288,7 @@ const exhibit_Main = async (store_id, access_token, item_ids) => {
 									);
 
 								}).catch((err) => {
-									console.log(':( Whoops! stockinfo update failed! :(');
+									console.log(':( Whoops! stockinfo update failed! :(', err);
 								});
 
 
@@ -309,7 +310,7 @@ const exhibit_Main = async (store_id, access_token, item_ids) => {
 					try {
 						await createZipFiles(folderPath, batchSize, maxCount);
 						console.log('All batches zipped successfully!');
-
+						
 						const zipFiles = fs.readdirSync(folderPath).filter((file) => file.endsWith('.zip'));
 						console.log('Zip files length:', zipFiles.length, zipFiles[0], '\n', 'Zip files:', zipFiles);
 
@@ -320,9 +321,6 @@ const exhibit_Main = async (store_id, access_token, item_ids) => {
 					} catch (error) {
 						console.error('Error zipping files:', error);
 					}
-					console.log('make all zip.');
-
-
 				}
 			}, 2 * 1000);
 		}).catch(err => {
