@@ -168,7 +168,6 @@ const amazonInput = (amSetting, codeList) => {
 
 exports.getInfo = (req, res) => {
 	let reqData = JSON.parse(req.body.registerData);
-	// console.log(reqData);
 	var user_id = reqData.user_id;
 	var store_id = reqData.store_id;
 

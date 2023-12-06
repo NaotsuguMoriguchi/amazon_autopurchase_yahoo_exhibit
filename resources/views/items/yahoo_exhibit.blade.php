@@ -90,6 +90,14 @@
 								<table id="example" class="table table-striped" style="width:100%">
 									<thead>
 										<tr>
+											<th>
+												<input
+													id="check_all"
+													class="form-check-input mt-0"
+													type="checkbox"
+													data-check-pattern="[name^='check-key']"
+													style="font-size: 1rem;"/>
+											</th>
 											<th style="width: 80px;">商品画像</th>
 											<th>商品名</th>
 											<th style="width: 100px;">ASIN</th>
@@ -100,6 +108,7 @@
 									<tbody>
 										@foreach($amazon_items as $item)
 										<tr>
+											<td style="border-right: 1px #efefef solid;"><input id="item-{{ $item->id }}" name="check-key{{ $item->id }}" data-id="{{ $item->id }}" class="form-check-input check-item mt-0" type="checkbox" value="" /></td>
 											<td>
 												<a href="{{ $item->shop_url }}" target="_blank">
 													<img style="width: 55px; height: 45px;" src="{{ $item->img_url }}" />
@@ -185,21 +194,70 @@
 	}
 
 	const exhibit = () => {
+		var item_ids = [];
+		const checkboxes = document.querySelectorAll('.check-item');
+		const checkedCheckboxes = [...checkboxes].filter((checkbox) => checkbox.checked);
+		const checkedCheckboxesLength = checkedCheckboxes.length;
+
+		if (checkedCheckboxesLength > 0) {
+			for (let index = 0; index < checkedCheckboxes.length; index++) {
+				var item_id = checkedCheckboxes[index].dataset.id;
+				item_ids.push(item_id);
+			}
+		} else {
+			// toastr.warning('出品商品を選択してください。');
+			toastr.warning('すべての商品を出品します。');
+		}
+
 		let postData = {
 			user_id: '{{ $yahoo_store->user_id }}',
 			store_id: '{{ $yahoo_store->id }}',
+			item_id: item_ids
 		}
 
 		$.ajax({
 			url: "/fmproxy/api/v1/yahoo/product_exhibit",
 			type: "post",
 			data: postData,
+			beforeSend: function () {
+				console.log('This is the data posted to the node.', postData);
+			},
 			success: function (res) {
-				console.log(res);
-				toastr.success('success');
+				toastr.info('商品を出品しています。');
 			}
 		});
 		console.log('ajax sending.');
-	}
+	};
+
+
+	jQuery(function () {
+		jQuery('[data-check-pattern]').checkAll();
+	});
+
+	(function ($) {
+		'use strict';
+
+		$.fn.checkAll = function (options) {
+			return this.each(function () {
+				var mainCheckbox = $(this);
+				var selector = mainCheckbox.attr('data-check-pattern');
+				var onChangeHandler = function (e) {
+					var $currentCheckbox = $(e.currentTarget);
+					var $subCheckboxes;
+
+					if ($currentCheckbox.is(mainCheckbox)) {
+						$subCheckboxes = $(selector);
+						$subCheckboxes.prop('checked', mainCheckbox.prop('checked'));
+					} else if ($currentCheckbox.is(selector)) {
+						$subCheckboxes = $(selector);
+						mainCheckbox.prop('checked', $subCheckboxes.filter(':checked').length === $subCheckboxes.length);
+					}
+				};
+
+				$(document).on('change', 'input[type="checkbox"]', onChangeHandler);
+			});
+		};
+	})(jQuery);
+
 </script>
 @endsection
