@@ -6,6 +6,7 @@ const FormData = require('form-data');
 const fs = require('fs');
 const fse = require('fs-extra');
 const archiver = require('archiver');
+const { Op } = require('sequelize');
 
 const yahoo_token = require("../controllers/yahoo.token.js");
 const { amazonItemList, yahooStoreItemList, yahooSettingList, yahooStoreList, exSettingList } = require("../models");
@@ -112,7 +113,22 @@ const img_upload = async (uploadImgPack_url, yahoo_auth_token, storeImgDir, zipF
 };
 
 
-const exhibit_Main = async (store_id, access_token) => {
+const exhibit_Main = async (store_id, access_token, item_ids) => {
+
+	var filter_query = {
+		store_id: store_id,
+		exhibit: 0
+	};
+
+	if (item_ids.length) {
+		filter_query.id = {
+			[Op.in]: item_ids
+		}
+	} else {
+		
+	}
+
+	console.log('this is a filter query from condition.', filter_query);
 
 	const yahooStore = await yahooStoreList.findOne({
 		where: { id: Number(store_id) },
@@ -131,7 +147,7 @@ const exhibit_Main = async (store_id, access_token) => {
 	const priceSetting = JSON.parse(setting_list.price_settings);
 	const { ngAsin, ngWord } = setting_list;
 
-	amazonItemList.findAll({ where: { store_id: store_id, exhibit: 0 } })
+	amazonItemList.findAll({ where: filter_query })
 		.then(exhibit_items => {
 
 			var index = 0;
@@ -315,12 +331,12 @@ const exhibit_Main = async (store_id, access_token) => {
 }
 
 
-const exhibit_get_token = (store_id) => {
+const exhibit_get_token = (store_id, item_ids) => {
 
 	yahooSettingList.findOne({ where: { store_id: store_id } })
 		.then(yahooSetting => {
 			let access_token = yahooSetting.access_token;
-			exhibit_Main(store_id, access_token);
+			exhibit_Main(store_id, access_token, item_ids);
 
 		}).catch(err => {
 			console.log("+++++++++++-------- catch error --------+++++++++++", err.message);
@@ -329,9 +345,11 @@ const exhibit_get_token = (store_id) => {
 
 
 exports.exhibit = async (req, res) => {
-
+	console.log(req.body);
 	let user_id = Number(req.body.user_id);
 	let store_id = Number(req.body.store_id);
+	let item_ids = Number(req.body.item_ids);
+	
 	let code = req.body.code;
 
 	if (req.body.authorization == 'new') {
@@ -339,7 +357,7 @@ exports.exhibit = async (req, res) => {
 		await yahoo_token.newAuthorization(store_id, code);
 
 		setTimeout(() => {
-			exhibit_get_token(store_id);
+			exhibit_get_token(store_id, item_ids);
 			res.status(200).send("Yahoo exhibit successfully");
 
 		}, 3000);

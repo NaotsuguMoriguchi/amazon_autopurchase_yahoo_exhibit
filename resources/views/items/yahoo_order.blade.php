@@ -144,7 +144,7 @@
 		jQuery('[data-check-pattern]').checkAll();
 	});
 
-	; (function ($) {
+	(function ($) {
 		'use strict';
 
 		$.fn.checkAll = function (options) {
