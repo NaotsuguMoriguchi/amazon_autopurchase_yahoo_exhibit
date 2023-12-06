@@ -345,11 +345,11 @@ const exhibit_get_token = (store_id, item_ids) => {
 
 
 exports.exhibit = async (req, res) => {
-	console.log(req.body);
+
 	let user_id = Number(req.body.user_id);
 	let store_id = Number(req.body.store_id);
-	let item_ids = Number(req.body.item_ids);
-	
+	let item_ids = req.body.item_id ?? [];
+
 	let code = req.body.code;
 
 	if (req.body.authorization == 'new') {
@@ -367,7 +367,7 @@ exports.exhibit = async (req, res) => {
 		await yahoo_token.reAuthorization(store_id);
 
 		setTimeout(() => {
-			exhibit_get_token(store_id);
+			exhibit_get_token(store_id, item_ids);
 			res.status(200).send("Yahoo exhibit successfully");
 
 		}, 3000);

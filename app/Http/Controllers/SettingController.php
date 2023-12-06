@@ -94,7 +94,7 @@ class SettingController extends Controller
         $store_id = $request->store_id;
         $yahoo_store = YahooStore::find($store_id);
 		$yahoo_setting = YahooSetting::where('store_id', $store_id)->first();
-		$amazon_items = AmazonItem::where('store_id', $store_id)->where('exhibit', 0)->get();
+		$amazon_items = AmazonItem::where('store_id', $store_id)->where('exhibit', 0)->paginate(20);
 
         return view('items.yahoo_exhibit', ['yahoo_store' => $yahoo_store, 'yahoo_setting' => $yahoo_setting, 'amazon_items' => $amazon_items]);
     }

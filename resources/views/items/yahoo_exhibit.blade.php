@@ -123,7 +123,7 @@
 									</tbody>
 								</table>
 							</div>
-
+							@if (count($amazon_items)) {{ $amazon_items->onEachSide(1)->links('items.pagination') }} @endif
 						</div>
 					</div>
 				</div>
@@ -150,30 +150,30 @@
 
 
 <script>
-	$(document).ready(function() {
-		$('#example').DataTable({
-			"columnDefs": [{
-				"orderable": false,
-				"targets": [1]
-			}],
-			language: {
-				//customize pagination prev and next buttons: use arrows instead of words
-				'paginate': {
-					'previous': '<span class="fa fa-chevron-left"></span>',
-					'next': '<span class="fa fa-chevron-right"></span>'
-				},
-				//customize number of elements to be displayed
-				"lengthMenu": 'Display <select class="form-control input-sm">' +
-					'<option value="10">10</option>' +
-					'<option value="20">20</option>' +
-					'<option value="50">50</option>' +
-					'<option value="100">100</option>' +
-					'<option value="500">500</option>' +
-					'<option value="-1">All</option>' +
-					'</select> results'
-			}
-		})
-	});
+	// $(document).ready(function() {
+	// 	$('#example').DataTable({
+	// 		"columnDefs": [{
+	// 			"orderable": false,
+	// 			"targets": [1]
+	// 		}],
+	// 		language: {
+	// 			//customize pagination prev and next buttons: use arrows instead of words
+	// 			'paginate': {
+	// 				'previous': '<span class="fa fa-chevron-left"></span>',
+	// 				'next': '<span class="fa fa-chevron-right"></span>'
+	// 			},
+	// 			//customize number of elements to be displayed
+	// 			"lengthMenu": 'Display <select class="form-control input-sm">' +
+	// 				'<option value="10">10</option>' +
+	// 				'<option value="20">20</option>' +
+	// 				'<option value="50">50</option>' +
+	// 				'<option value="100">100</option>' +
+	// 				'<option value="500">500</option>' +
+	// 				'<option value="-1">All</option>' +
+	// 				'</select> results'
+	// 		}
+	// 	})
+	// });
 
 
 	const edit_yaSetting = (e) => {
@@ -226,7 +226,6 @@
 				toastr.info('商品を出品しています。');
 			}
 		});
-		console.log('ajax sending.');
 	};
 
 
