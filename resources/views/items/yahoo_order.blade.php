@@ -42,6 +42,18 @@
 
 		<div class="card">
 			<h5 class="card-header">Yahoo注文履歴</h5>
+			<div class="row m-2">
+				<div class="col-md-10 col-sm-6">
+				</div>
+				<div class="col-md-2 col-sm-6">
+					<select class="form-control" id="page_size" name="page_size" onchange="window.location.href = this.value;">
+						<option value="{{ route('item_order', [$yahoo_store->id, 'page_size' => 10]) }}" @if ($_GET['page_size'] && $_GET['page_size'] == 10) selected @endif>10</option>
+						<option value="{{ route('item_order', [$yahoo_store->id, 'page_size' => 30]) }}" @if ($_GET['page_size'] && $_GET['page_size'] == 30) selected @endif>30</option>
+						<option value="{{ route('item_order', [$yahoo_store->id, 'page_size' => 45]) }}" @if ($_GET['page_size'] && $_GET['page_size'] == 45) selected @endif>45</option>
+						<option value="{{ route('item_order', [$yahoo_store->id, 'page_size' => 60]) }}" @if ($_GET['page_size'] && $_GET['page_size'] == 60) selected @endif>60</option>
+					</select>
+				</div>
+			</div>
 			<div class="table-responsive text-nowrap">
 				<table class="table table-striped">
 					<thead>
@@ -68,6 +80,11 @@
 										data-bs-toggle="modal"
 										data-bs-target="#checked_download"
 									><i class='bx bx-download text-primary' style="font-size: 1.5rem;"></i></a>
+									<a
+										href=#
+										data-bs-toggle="modal"
+										data-bs-target="#checked_delete"
+									><i class='bx bx-trash text-danger' style="font-size: 1.5rem;"></i></a>
 								</span>
 							</th>
 						</tr>
@@ -90,7 +107,7 @@
 									</button>
 									<div class="dropdown-menu">
 										<a class="dropdown-item" href="{{ route('csv_download', $item->id) }}"><i class='bx bx-download text-primary' style="font-size: 1rem;"></i> ダウンロード</a>
-										<a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-trash me-1"></i> 消去</a>
+										<a class="dropdown-item" href="{{ route('order_delete', $item->id) }}"><i class="bx bx-trash me-1 text-danger"></i> 削除</a>
 									</div>
 								</div>
 							</td>
@@ -98,11 +115,12 @@
 						@endforeach
 					</tbody>
 				</table>
-				@if(count($yahoo_order_items) > 0)
+				@if (count($yahoo_order_items) > 0)
 				@else
 					<h5 class="text-center mt-4">注文データはありません。</h5>
 				@endif
 			</div>
+			@if (count($yahoo_order_items)) {{ $yahoo_order_items->onEachSide(1)->links('items.pagination') }} @endif
 		</div>
 	</div>
 </div>
@@ -127,6 +145,33 @@
 			<!-- Modal footer -->
 			<div class="modal-footer" id="button-container">
 				<button type="button" class="btn btn-outline-primary" onclick="checked_download()"><span class="tf-icons bx bx-download"></span>&nbsp; ダウンロード</button>
+				<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">キャンセル</button>
+			</div>
+			
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="checked_delete">
+	<div class="modal-dialog">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header bg-danger">
+				<h4 class="modal-title text-white">注文データ削除</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row mt-2">
+					<h5 class="text-center">選択された注文データを削除しますか？</h5>
+				</div>
+			</div>
+
+			<!-- Modal footer -->
+			<div class="modal-footer" id="button-container">
+				<button type="button" class="btn btn-outline-danger" onclick="checked_delete()"><span class="tf-icons bx bx-trash"></span>&nbsp; 削除</button>
 				<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">キャンセル</button>
 			</div>
 			
@@ -191,9 +236,34 @@
 
 		} else {
 			$('#checked_download').modal('hide');
-			toastr.warning('Not found checked item.');
+			toastr.warning('ダウンロードするデータがありません。');
 		}
-	}
+	};
+
+	const checked_delete = () => {
+
+		const checkboxes = document.querySelectorAll('.check-item');
+		const checkedCheckboxes = [...checkboxes].filter((checkbox) => checkbox.checked);
+		const checkedCheckboxesLength = checkedCheckboxes.length;
+		// console.log(checkedCheckboxes, checkedCheckboxesLength);
+
+		if (checkedCheckboxesLength > 0) {
+
+			const item_ids = [];
+			for (let index = 0; index < checkedCheckboxes.length; index++) {
+				var item_id = checkedCheckboxes[index].dataset.id;
+				item_ids.push(item_id);
+			}
+			// console.log(item_ids);
+
+			window.location = `/item/yahoo_order/delete/${item_ids}`;
+			$('#checked_delete').modal('hide');
+
+		} else {
+			$('#checked_delete').modal('hide');
+			toastr.warning('削除するデータがありません。');
+		}
+	};
 
 </script>
 @endsection

@@ -90,11 +90,10 @@ class SettingController extends Controller
     // ---------  Amazon Exhibit  --------- //
     public function item_exhibit(Request $request): View
     {
-        $user_id = Auth::id();
         $store_id = $request->store_id;
         $yahoo_store = YahooStore::find($store_id);
 		$yahoo_setting = YahooSetting::where('store_id', $store_id)->first();
-		$amazon_items = AmazonItem::where('store_id', $store_id)->where('exhibit', 0)->paginate(20);
+		$amazon_items = AmazonItem::where('store_id', $store_id)->where('exhibit', 0)->paginate($_GET['page_size']);
 
         return view('items.yahoo_exhibit', ['yahoo_store' => $yahoo_store, 'yahoo_setting' => $yahoo_setting, 'amazon_items' => $amazon_items]);
     }
@@ -115,10 +114,9 @@ class SettingController extends Controller
     // ---------  Amazon Order  --------- //
     public function item_order(Request $request): View
     {
-        $user_id = Auth::id();
         $store_id = $request->store_id;
         $yahoo_store = YahooStore::find($store_id);
-		$yahoo_order_items = YahooOrderItem::where('store_id', $store_id)->get();
+		$yahoo_order_items = YahooOrderItem::where('store_id', $store_id)->paginate($_GET['page_size']);
 
         return view('items.yahoo_order', ['yahoo_store' => $yahoo_store, 'yahoo_order_items' => $yahoo_order_items]);
     }
@@ -164,6 +162,18 @@ class SettingController extends Controller
 	}
 
     
+    public function order_delete(Request $request) {
+        $string = $request->ids;
+        $item_ids = explode(',', $string);
+
+        foreach($item_ids as $item_id){
+            $downItem = YahooOrderItem::find($item_id);
+            $downItem->delete();
+        }
+
+        return back();
+    }
+
 
     // ---------  Auto Tool API  --------- //
     public function api_key_validate($key)
@@ -224,8 +234,9 @@ class SettingController extends Controller
 
     public function get_shop(Request $request)
     {
-        $validate = $this->api_key_validate($request->key);
 
+        $validate = $this->api_key_validate($request->key);
+	
         if ($validate['check'] == 1) {
             $user_id = $validate['user_id'];
             $item_code = $request->item_code;
@@ -248,7 +259,7 @@ class SettingController extends Controller
                 ]);
 
 
-                return response() -> json(
+                return response()->json(
                     [
                         'license' => $validate['license'],
                         'message' => $validate['message'],
@@ -258,11 +269,11 @@ class SettingController extends Controller
         }
 
 
-        return response() -> json(
+        return response()->json(
             [
                 'license' => $validate['license'],
                 'message' => $validate['message'],
-                'shopURL' => 'Not',
+                'shopURL' => 'Not available item',
             ], 200);
 
     }

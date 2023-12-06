@@ -1,0 +1,30 @@
+## ユーザー情報
+USER_EMAIL=half.moon.dev@outlook.com
+USER_PASSWORD=Fatty@95116
+APP_KEY=1234567890
+USER_STORE=, oroshiuri-company
+CARD_NUMBER=4306 7615 7602 5902
+ITEM_SENDER=卸売カンパニー
+
+
+##  1：一般アカウント、2：ビジネスアカウント
+USER_ACCOUNT_TYPE=2
+
+
+## 置き配指定
+# Basic account
+#   1：玄関、2：宅配ボックス、3：ガスメーターボックス、4：自転車かご、5：車庫、6：建物内受付/管理人、7：置き配を利用しない、8：ご近所の方、9：設定なし
+# Business account
+#   1：建物内受付/管理人、2：玄関、3：宅配ボックス、4：ガスメーターボックス、5：車庫、6：自転車かご、7：置き配を利用しない
+
+PLACEMENT_SELECT=1
+
+
+## ギフトメッセージ、配送メッセージ
+GIFT_MESSAGE=【ご利用頂きありがとうございます。お客様に寄り添う運営を心掛けており、皆様からの評価が励みになります。】
+DELIVERY_MESSAGE=◆ 置き配はご遠慮ください。◆ 宅配BOXを利用の場合は暗証番号を設定の上、記入した通知票をポストに入れてください。◆ 不在の場合はポストに不在票を入れてください。
+
+
+
+ORDER_CSV=C:/Users/Administrator/Downloads/rr-ppk_2023-12-06 (1).csv
+OUTPUT_CSV=C:/Users/Administrator/Downloads

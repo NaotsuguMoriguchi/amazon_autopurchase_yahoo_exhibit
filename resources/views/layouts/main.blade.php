@@ -126,7 +126,7 @@
 						<ul class="menu-sub">
 							@foreach ( $storeList as $store )
 							<li <?php if (strpos(url()->current(), "item/yahoo_exhibit/" . $store->id)) echo 'class="menu-item active"'; else echo 'class="menu-item"'; ?>>
-								<a href="{{ route('item_exhibit', $store->id) }}" class="menu-link collapsed">
+								<a href="{{ route('item_exhibit', [$store->id, 'page_size' => 10]) }}" class="menu-link collapsed">
 									<div>{{ $store->store_name }}</div>
 								</a>
 							</li>
@@ -142,7 +142,7 @@
 						<ul class="menu-sub">
 							@foreach ( $storeList as $store )
 							<li <?php if (strpos(url()->current(), "item/yahoo_order/" . $store->id)) echo 'class="menu-item active"'; else echo 'class="menu-item"'; ?>>
-								<a href="{{ route('item_order', $store->id) }}" class="menu-link collapsed">
+								<a href="{{ route('item_order', [$store->id, 'page_size' => 10]) }}" class="menu-link collapsed">
 									<div>{{ $store->store_name }}</div>
 								</a>
 							</li>

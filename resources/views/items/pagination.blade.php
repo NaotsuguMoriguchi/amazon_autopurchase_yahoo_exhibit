@@ -10,7 +10,11 @@
 				</li>
 			@else
 				<li class="page-item">
+					@if ($_GET['page_size'])
+					<a class="page-link" href="{{ $paginator->previousPageUrl() . '&page_size=' . $_GET['page_size'] }}" aria-label="Previous">
+					@else
 					<a class="page-link" href="{{ $paginator->previousPageUrl() }}" aria-label="Previous">
+					@endif
 						<span aria-hidden="true">前へ</span>
 						<!-- <span aria-hidden="true"><i class="bi bi-chevron-compact-left" aria-hidden="true"></i></span> -->
 					</a>
@@ -35,7 +39,11 @@
 							</li>
 						@else
 							<li class="page-item">
+								@if ($_GET['page_size'])
+								<a class="page-link" href="{{ $url . '&page_size=' . $_GET['page_size'] }}">{{ $page }}</a>
+								@else
 								<a class="page-link" href="{{ $url }}">{{ $page }}</a>
+								@endif
 							</li>
 						@endif
 					@endforeach
@@ -44,7 +52,11 @@
 			
 			@if ($paginator->hasMorePages())
 				<li class="page-item">
+					@if ($_GET['page_size'])
+					<a class="page-link" href="{{ $paginator->nextPageUrl() . '&page_size=' . $_GET['page_size'] }}" aria-label="Next">
+					@else
 					<a class="page-link" href="{{ $paginator->nextPageUrl() }}" aria-label="Next">
+					@endif
 						<span aria-hidden="true">次へ</span>
 						<!-- <span aria-hidden="true"><i class="bi bi-chevron-compact-right" aria-hidden="true"></i></span> -->
 					</a>

@@ -85,7 +85,18 @@
 				<div id="amazon_product" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#yahoo_exhibit_accordion">
 					<div class="accordion-body">
 						<div class="amazon-item-group mt-4">
-
+							<div class="row m-2">
+								<div class="col-md-10 col-sm-6">
+								</div>
+								<div class="col-md-2 col-sm-6">
+									<select class="form-control" id="page_size" name="page_size" onchange="window.location.href = this.value;">
+										<option value="{{ route('item_exhibit', [$yahoo_store->id, 'page_size' => 10]) }}" @if ($_GET['page_size'] && $_GET['page_size'] == 10) selected @endif>10</option>
+										<option value="{{ route('item_exhibit', [$yahoo_store->id, 'page_size' => 30]) }}" @if ($_GET['page_size'] && $_GET['page_size'] == 30) selected @endif>30</option>
+										<option value="{{ route('item_exhibit', [$yahoo_store->id, 'page_size' => 45]) }}" @if ($_GET['page_size'] && $_GET['page_size'] == 45) selected @endif>45</option>
+										<option value="{{ route('item_exhibit', [$yahoo_store->id, 'page_size' => 60]) }}" @if ($_GET['page_size'] && $_GET['page_size'] == 60) selected @endif>60</option>
+									</select>
+								</div>
+							</div>
 							<div class="table-responsive text-nowrap">
 								<table id="example" class="table table-striped" style="width:100%">
 									<thead>
@@ -114,7 +125,7 @@
 													<img style="width: 55px; height: 45px;" src="{{ $item->img_url }}" />
 												</a>
 											</td>
-											<td> {{ $item->name }} </td>
+											<td>{{ $item->name }}</td>
 											<td>{{ $item->asin }}</td>
 											<td>{{ $item->jan }}</td>
 											<td>{{ $item->am_price }}</td>
@@ -122,6 +133,10 @@
 										@endforeach
 									</tbody>
 								</table>
+								@if(count($amazon_items) > 0)
+								@else
+									<h5 class="text-center mt-4">出品データはありません。</h5>
+								@endif
 							</div>
 							@if (count($amazon_items)) {{ $amazon_items->onEachSide(1)->links('items.pagination') }} @endif
 						</div>
