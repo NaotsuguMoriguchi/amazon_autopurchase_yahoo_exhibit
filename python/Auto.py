@@ -13,7 +13,7 @@ import time
 from datetime import datetime, timedelta
 import json
 from urllib.parse import urlparse
-
+from tkinter import messagebox
 
 # Base URL Info
 WAIT_SEC = 20
@@ -36,20 +36,6 @@ def make_autoOrder_folder():
         print(f'Folder "{folder_name}" created successfully')
     else:
         print(f'Folder "{folder_name}" already exists')
-
-
-def make_autoOrderResult_csv(data):
-    folder_name = 'Auto_Buy_Result'
-    csv_file_name = "自動購入結果" + datetime.today().strftime('%Y%m%d%H%M%S') + ".csv"
-    csv_file_path = os.path.join(folder_name, csv_file_name)
-
-    with open(csv_file_path, mode='a', newline="", encoding="utf-8", errors="replace") as csv_file:
-        result_csv = csv.writer(csv_file)
-        result_csv.writerow(Arg)
-
-    result_csv.writerow(data)
-
-    csv_file.close()
 
 
 def file_reader():
@@ -447,8 +433,6 @@ def auto_purchase(item, user_info, driver):
 
     response = requests.request("POST", url, headers=headers, data=payload)
     decoded_data = json.loads(response.text)
-    print(decoded_data)
-    return
     item_detail_url = decoded_data['shopURL']
     # item_detail_url = 'https://www.amazon.co.jp/dp/B0773H76WK'
     print(item_detail_url)
@@ -507,14 +491,13 @@ def auto_purchase(item, user_info, driver):
     else:
         print('OK')
 
-    order_completeConfirm(driver)
 
 
     order_time_str = base_info[0]
-    order_time_obj = datetime.strptime(order_time_str, '%m/%d/%Y %I:%M:%S %p')
+    order_time_obj = datetime.strptime(order_time_str, '%Y-%m-%d %H:%M:%S')
     order_time = order_time_obj.strftime('%m/%d/%Y')
     
-    today = datetime.today().strftime('%Y-%m-%d')
+    today = datetime.today().strftime('%m/%d/%Y')
     planned_date = (datetime.today() + timedelta(days=1)).strftime('%Y年%m月%d日')
 
     order_id = base_info[2]
@@ -530,12 +513,25 @@ def auto_purchase(item, user_info, driver):
     buy_price = 0
     point = 0
     result = '注文済み'
-    amazon_order_num = 0
+    amazon_order_num = ''
     order_info = ''
 
+    csv_file_name = "自動購入結果_" + datetime.today().strftime('%Y%m%d%H%M%S') + ".csv"
+    csv_file_path = os.path.join('C:/Users/Administrator/Downloads', csv_file_name)
 
-    make_autoOrderResult_csv()
+    with open(csv_file_path, mode='w', newline="", encoding="utf-8", errors="replace") as csv_file:
+        print(csv_file_path)
 
+        result_csv = csv.writer(csv_file)
+        result_csv.writerow(['注文日', '予定日', 'Yahoo注文番号', 'ASIN', '商品コード', '受取人名', '〒', '住所', '電話番号', '商品名', '個数', '販売額', '仕入額', 'ポイント', '結果', 'Amazon注文番号', '注文者情報'])
+        result_csv.writerow([order_time, planned_date, order_id, asin, code, recipient_name, zip_code, address, phone_number, product_name, quantity, sell_price, buy_price, point, result, amazon_order_num, order_info])
+
+    print(f"CSV file '{csv_file_name}' created successfully.")
+
+    csv_file.close()
+
+
+    order_completeConfirm(driver)
 
 
 def main():
@@ -545,15 +541,16 @@ def main():
     driver.maximize_window()
     
     amazon_login(driver, user_info['USER_EMAIL'], user_info['USER_PASSWORD'])
-
     try:
         with open(user_info['ORDER_CSV'], 'r', encoding='utf-8') as file:
             content = file.read()
             lines = content.split('\n')
             for idx, line in enumerate(lines):
-                if (idx == 0 or idx == len(lines) - 1):
+                if (idx == 0):
                     continue
                 auto_purchase(line, user_info, driver)
+
+            messagebox.showwarning("完了", "【注文処理完了】")
 
     except FileNotFoundError:
         print("File not found.")
